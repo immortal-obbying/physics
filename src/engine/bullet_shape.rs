@@ -1,5 +1,5 @@
 use crate::util::transform::Transform;
-use crate::util::vector::Vector;
+use crate::util::vector::Vector3;
 use crate::engine::bullet_math::{
 	fmaxss, fminss, cross, sse_normalize,
 };
@@ -15,11 +15,11 @@ pub enum GeomShape {
 
 pub struct Shape {
 	pub geom: GeomShape,
-	pub half: Vector,
+	pub half: Vector3,
 	pub margin: f32
 }
 
-pub fn make_shape(a1: GeomShape, a2: Vector) -> Shape {
+pub fn make_shape(a1: GeomShape, a2: Vector3) -> Shape {
 	let x = fmaxss(a2.x, 0.05) * 0.5;
 	let mut y = fmaxss(a2.y, 0.05) * 0.5;
 	let mut z = fmaxss(a2.z, 0.05) * 0.5;
@@ -30,7 +30,7 @@ pub fn make_shape(a1: GeomShape, a2: Vector) -> Shape {
 		let by = fminss(y, z);
 		return Shape {
 			geom: GeomShape::Ball,
-			half: Vector::new(bx, by, bz),
+			half: Vector3::new(bx, by, bz),
 			margin: z
 		};
 	}
@@ -41,7 +41,7 @@ pub fn make_shape(a1: GeomShape, a2: Vector) -> Shape {
 	}
 	return Shape {
 		geom: a1,
-		half: Vector::new(
+		half: Vector3::new(
 			fmaxss(x - 0.05, 0.0),
 			fmaxss(y - 0.05, 0.0),
 			fmaxss(z - 0.05, 0.0)
@@ -58,14 +58,14 @@ fn copysign(a1: f32, a2: f32) -> f32 {
 	}
 }
 
-pub fn support(shape: &Shape, a2: Vector) -> Vector {
+pub fn support(shape: &Shape, a2: Vector3) -> Vector3 {
 	match shape.geom {
 		GeomShape::Ball => {
-			return Vector::new(0.0, 0.0, 0.0);
+			return Vector3::new(0.0, 0.0, 0.0);
 		},
 
 		GeomShape::Block => {
-			return Vector::new(
+			return Vector3::new(
 				copysign(a2.x, shape.half.x),
 				copysign(a2.y, shape.half.y),
 				copysign(a2.z, shape.half.z)
@@ -76,20 +76,20 @@ pub fn support(shape: &Shape, a2: Vector) -> Vector {
 			let yy = a2.y * shape.half.y;
 			let zz = a2.z * shape.half.z;
 			if yy < 0.0 && zz > 0.0 {
-				return Vector::new(
+				return Vector3::new(
 					copysign(a2.x, shape.half.x),
 					copysign(a2.y, shape.half.y),
 					copysign(a2.z, shape.half.z)
 				);
 			}
 			if yy > -zz {
-				return Vector::new(
+				return Vector3::new(
 					copysign(a2.x, shape.half.x),
 					shape.half.y,
 					shape.half.z
 				);
 			} else {
-				return Vector::new(
+				return Vector3::new(
 					copysign(a2.x, shape.half.x),
 					-shape.half.y,
 					-shape.half.z
@@ -103,9 +103,9 @@ pub fn support(shape: &Shape, a2: Vector) -> Vector {
 			if yzlen > 0.0 {
 				let y = a2.y / yzlen * shape.half.y;
 				let z = a2.z / yzlen * shape.half.y;
-				return Vector::new(x, y, z);
+				return Vector3::new(x, y, z);
 			} else {
-				return Vector::new(x, 0.0, 0.0);
+				return Vector3::new(x, 0.0, 0.0);
 			}
 		},
 
@@ -141,13 +141,13 @@ pub fn support(shape: &Shape, a2: Vector) -> Vector {
 			}
 
 			if v11 {
-				return Vector::new(
+				return Vector3::new(
 					shape.half.x,
 					shape.half.y,
 					-shape.half.z
 				);
 			} else {
-				return Vector::new(
+				return Vector3::new(
 					copysign(a2.x, shape.half.x),
 					-shape.half.y,
 					copysign(a2.z, shape.half.z)
@@ -168,12 +168,12 @@ pub fn collision_transform(geom: GeomShape, a2: &Transform) -> Transform {
 		},
 
 		GeomShape::Cylinder => {
-			let v4 = Vector::new(a2.r[0], a2.r[3], a2.r[6]);
+			let v4 = Vector3::new(a2.r[0], a2.r[3], a2.r[6]);
 			let p = {
 				if v4.y.abs() < 0.9 {
-					Vector::new(1.0, 0.0, 0.0)
+					Vector3::new(1.0, 0.0, 0.0)
 				} else {
-					Vector::new(0.0, 1.0, 0.0)
+					Vector3::new(0.0, 1.0, 0.0)
 				}
 			};
 			let v1 = sse_normalize(&cross(&v4, &p));
@@ -195,7 +195,7 @@ pub fn collision_transform(geom: GeomShape, a2: &Transform) -> Transform {
 }
 
 /// a1 type is a guess
-fn extents_size(geom: GeomShape, a2: &Vector) -> Vector {
+fn extents_size(geom: GeomShape, a2: &Vector3) -> Vector3 {
 	let x = fmaxss(a2.x, 0.01);
 	let y = fmaxss(a2.y, 0.01);
 	let z = fmaxss(a2.z, 0.01);
@@ -203,20 +203,20 @@ fn extents_size(geom: GeomShape, a2: &Vector) -> Vector {
 	match geom {
 		GeomShape::Ball => {
 			let d = fminss(z, fminss(y, x));
-			return Vector::new(d, d, d);
+			return Vector3::new(d, d, d);
 		},
 		GeomShape::Cylinder => {
 			let d = fminss(z, y);
-			return Vector::new(x, d, d);
+			return Vector3::new(x, d, d);
 		},
 		_ => {
-			return Vector::new(x, y, z);
+			return Vector3::new(x, y, z);
 		}
 	}
 }
 
-pub fn simulation_extents(geom: GeomShape, a2: &Vector, a3: &Transform)
-	-> (Vector, Vector)
+pub fn simulation_extents(geom: GeomShape, a2: &Vector3, a3: &Transform)
+	-> (Vector3, Vector3)
 {
 	let extents = extents_size(geom, a2);
 	let hx = extents.x * 0.5;
@@ -241,12 +241,12 @@ pub fn simulation_extents(geom: GeomShape, a2: &Vector, a3: &Transform)
 	}
 
 	return (
-		Vector::new(min[0], min[1], min[2]),
-		Vector::new(max[0], max[1], max[2])
+		Vector3::new(min[0], min[1], min[2]),
+		Vector3::new(max[0], max[1], max[2])
 	);
 }
 
-pub fn fuzzy_overlap(a1: &Vector, a2: &Vector, a3: &Vector, a4: &Vector)
+pub fn fuzzy_overlap(a1: &Vector3, a2: &Vector3, a3: &Vector3, a4: &Vector3)
 	-> bool
 {
 	if a4.x >= a1.x && a2.x >= a3.x {

@@ -1,5 +1,5 @@
 use crate::util::transform::Transform;
-use crate::util::vector::Vector;
+use crate::util::vector::Vector3;
 use crate::engine::math::{ Matrix, Quaternion };
 
 #[inline]
@@ -23,35 +23,35 @@ pub fn fneg(a1: f32) -> f32 {
 }
 
 #[inline]
-pub fn dot(a1: &Vector, a2: &Vector) -> f32 {
+pub fn dot(a1: &Vector3, a2: &Vector3) -> f32 {
 	let v = a1 * a2;
 	return v.x + v.y + v.z;
 }
 
 #[inline]
-pub fn length2(a1: &Vector) -> f32 {
+pub fn length2(a1: &Vector3) -> f32 {
 	let v = a1 * a1;
 	return v.x + v.y + v.z;
 }
 
 #[inline]
-pub fn length(a1: &Vector) -> f32 {
+pub fn length(a1: &Vector3) -> f32 {
 	let v = a1 * a1;
 	return (v.x + v.y + v.z).sqrt();
 }
 
 #[inline]
-pub fn cross(a1: &Vector, a2: &Vector) -> Vector {
+pub fn cross(a1: &Vector3, a2: &Vector3) -> Vector3 {
 	// to be concise these are all f32
 	let x = (a1.y * a2.z) - (a1.z * a2.y);
 	let y = (a1.z * a2.x) - (a1.x * a2.z);
 	let z = (a1.x * a2.y) - (a1.y * a2.x);
-	return Vector { x, y, z };
+	return Vector3 { x, y, z };
 }
 
 #[inline]
-pub fn vneg(a1: &Vector) -> Vector {
-	Vector {
+pub fn vneg(a1: &Vector3) -> Vector3 {
+	Vector3 {
 		x: -a1.x,
 		y: -a1.y,
 		z: -a1.z
@@ -74,7 +74,7 @@ pub fn rsqrtss(a1: f32) -> f32 {
 }
 
 #[inline]
-pub fn sse_normalize(a1: &Vector) -> Vector {
+pub fn sse_normalize(a1: &Vector3) -> Vector3 {
 	let sq = a1 * a1;
 	let len_sq = sq.x + sq.y + sq.z;
 	let len_rsq = rsqrtss(len_sq);
@@ -83,7 +83,7 @@ pub fn sse_normalize(a1: &Vector) -> Vector {
 }
 
 #[inline]
-pub fn sse_normalize_len(a1: &Vector) -> Vector {
+pub fn sse_normalize_len(a1: &Vector3) -> Vector3 {
 	let sq = a1 * a1;
 	let len_sq = sq.x + sq.y + sq.z;
 	let len_rsq = rsqrtss(len_sq);
@@ -92,43 +92,43 @@ pub fn sse_normalize_len(a1: &Vector) -> Vector {
 }
 
 #[inline]
-pub fn mat_apply(a1: &Matrix, a2: &Vector) -> Vector {
-	let v1 = Vector { x: a1[0], y: a1[3], z: a1[6] };
-	let v2 = Vector { x: a1[1], y: a1[4], z: a1[7] };
-	let v3 = Vector { x: a1[2], y: a1[5], z: a1[8] };
+pub fn mat_apply(a1: &Matrix, a2: &Vector3) -> Vector3 {
+	let v1 = Vector3 { x: a1[0], y: a1[3], z: a1[6] };
+	let v2 = Vector3 { x: a1[1], y: a1[4], z: a1[7] };
+	let v3 = Vector3 { x: a1[2], y: a1[5], z: a1[8] };
 	return a2.x * v1 + a2.y * v2 + a2.z * v3;
 }
 
 #[inline]
-pub fn mat_apply_t(a1: &Matrix, a2: &Vector) -> Vector {
-	let v1 = Vector { x: a1[0], y: a1[1], z: a1[2] };
-	let v2 = Vector { x: a1[3], y: a1[4], z: a1[5] };
-	let v3 = Vector { x: a1[6], y: a1[7], z: a1[8] };
+pub fn mat_apply_t(a1: &Matrix, a2: &Vector3) -> Vector3 {
+	let v1 = Vector3 { x: a1[0], y: a1[1], z: a1[2] };
+	let v2 = Vector3 { x: a1[3], y: a1[4], z: a1[5] };
+	let v3 = Vector3 { x: a1[6], y: a1[7], z: a1[8] };
 	return a2.x * v1 + a2.y * v2 + a2.z * v3;
 }
 
 #[inline]
-pub fn xform(a1: &Transform, a2: &Vector) -> Vector {
-	let v1 = Vector { x: a1.r[0], y: a1.r[1], z: a1.r[2] };
-	let v2 = Vector { x: a1.r[3], y: a1.r[4], z: a1.r[5] };
-	let v3 = Vector { x: a1.r[6], y: a1.r[7], z: a1.r[8] };
+pub fn xform(a1: &Transform, a2: &Vector3) -> Vector3 {
+	let v1 = Vector3 { x: a1.r[0], y: a1.r[1], z: a1.r[2] };
+	let v2 = Vector3 { x: a1.r[3], y: a1.r[4], z: a1.r[5] };
+	let v3 = Vector3 { x: a1.r[6], y: a1.r[7], z: a1.r[8] };
 	return a2.x * v1 + a2.y * v2 + a2.z * v3 + a1.p;
 }
 
 #[inline]
-pub fn inv_xform(a1: &Transform, a2: &Vector) -> Vector {
+pub fn inv_xform(a1: &Transform, a2: &Vector3) -> Vector3 {
 	let inv = a2 - a1.p;
-	let v1 = Vector { x: a1.r[0], y: a1.r[1], z: a1.r[2] };
-	let v2 = Vector { x: a1.r[3], y: a1.r[4], z: a1.r[5] };
-	let v3 = Vector { x: a1.r[6], y: a1.r[7], z: a1.r[8] };
+	let v1 = Vector3 { x: a1.r[0], y: a1.r[1], z: a1.r[2] };
+	let v2 = Vector3 { x: a1.r[3], y: a1.r[4], z: a1.r[5] };
+	let v3 = Vector3 { x: a1.r[6], y: a1.r[7], z: a1.r[8] };
 	return inv.x * v1 + inv.y * v2 + inv.z * v3 + a1.p;
 }
 
 #[inline]
 pub fn transpose_times(a1: &Matrix, a2: &Matrix) -> Matrix {
-	let v1 = Vector { x: a2[0], y: a2[1], z: a2[2] };
-	let v2 = Vector { x: a2[3], y: a2[4], z: a2[5] };
-	let v3 = Vector { x: a2[6], y: a2[7], z: a2[8] };
+	let v1 = Vector3 { x: a2[0], y: a2[1], z: a2[2] };
+	let v2 = Vector3 { x: a2[3], y: a2[4], z: a2[5] };
+	let v3 = Vector3 { x: a2[6], y: a2[7], z: a2[8] };
 	let m1 = a1[0] * v1 + a1[3] * v2 + a1[6] * v3;
 	let m2 = a1[1] * v1 + a1[4] * v2 + a1[7] * v3;
 	let m3 = a1[2] * v1 + a1[5] * v2 + a1[8] * v3;
@@ -216,4 +216,4 @@ pub fn acosf(a1: f32) -> f32 {
 	a1.acos()
 }
 
-// pub static ZERO3: Vector = Vector { x: 0.0, y: 0.0, z: 0.0 };
+// pub static ZERO3: Vector3 = Vector3 { x: 0.0, y: 0.0, z: 0.0 };

@@ -1,16 +1,16 @@
 use crate::util::transform::Transform;
-use crate::util::vector::Vector;
+use crate::util::vector::Vector3;
 use crate::engine::bullet_math::{
 	fminss, dot, length2, xform, inv_xform
 };
 
 #[derive(Clone)]
 pub struct Point {
-	pub local_a: Vector,
-	pub local_b: Vector,
-	pub world_b: Vector,
-	pub world_a: Vector,
-	pub normal_b: Vector,
+	pub local_a: Vector3,
+	pub local_b: Vector3,
+	pub world_b: Vector3,
+	pub world_a: Vector3,
+	pub normal_b: Vector3,
 	user: Option<u8>,
 	pub distance: f32
 }
@@ -19,7 +19,7 @@ pub struct Manifold {
 	pub threshold: f32
 }
 
-fn area(a1: &Vector, a2: &Vector) -> f32 {
+fn area(a1: &Vector3, a2: &Vector3) -> f32 {
 	let v6 = a2.y * a1.x - a2.x * a1.y;
 	let v3 = a2.z * a1.y - a2.y * a1.z;
 	let v7 = a2.x * a1.z - a2.z * a1.x;
@@ -146,7 +146,7 @@ pub fn refresh_contact_points(a1: &mut Manifold, a2: &Transform,
 }
 
 pub fn add_contact_point(a1: &mut Manifold, a2: &Transform,
-	a3: &Transform, a4: &Vector, a5: &Vector, a6: f32) -> usize
+	a3: &Transform, a4: &Vector3, a5: &Vector3, a6: f32) -> usize
 {
 	if a1.threshold < a6 {
 		return 0;

@@ -1,5 +1,5 @@
 use crate::util::transform::Transform;
-use crate::util::vector::Vector;
+use crate::util::vector::Vector3;
 use crate::engine::bullet_math::{
 	fmaxss, dot, length2, length, cross, vneg, mat_apply, mat_apply_t,
 	transpose_times, xform, rsqrtss
@@ -14,7 +14,7 @@ use crate::engine::math::{
 };
 
 
-pub fn det(a1: &Vector, a2: &Vector, a3: &Vector) -> f32 {
+pub fn det(a1: &Vector3, a2: &Vector3, a3: &Vector3) -> f32 {
 	return (a1.y * a2.z * a3.x)
 		+ (a1.z * a2.x * a3.y)
 		- (a1.x * a2.z * a3.y)
@@ -23,7 +23,7 @@ pub fn det(a1: &Vector, a2: &Vector, a3: &Vector) -> f32 {
 		- (a1.z * a2.y * a3.x);
 }
 
-pub fn det_parts(a1: &Vector, a2: &Vector, a3: &Vector) -> (f32, f32) {
+pub fn det_parts(a1: &Vector3, a2: &Vector3, a3: &Vector3) -> (f32, f32) {
 	return ((a1.y * a2.z * a3.x)
 		+ (a1.z * a2.x * a3.y)
 		- (a1.x * a2.z * a3.y)
@@ -56,13 +56,13 @@ pub fn new_minkowski_diff(a1: Shape, a2: &Transform, a3: Shape,
 
 /// could possibly make this public
 struct SV {
-	pa: Vector,
-	pb: Vector,
-	w: Vector
+	pa: Vector3,
+	pb: Vector3,
+	w: Vector3
 }
 
-fn get_support(a1: &MinkowskiDiff, a2: &Vector) -> SV {
-	let v1: Vector = a2 * rsqrtss(length2(a2));
+fn get_support(a1: &MinkowskiDiff, a2: &Vector3) -> SV {
+	let v1: Vector3 = a2 * rsqrtss(length2(a2));
 	let pa = support(&a1.shape0, v1);
 	let pb = mat_apply(&a1.toshape0.r, &support(
 		&a1.shape1,
@@ -75,7 +75,7 @@ fn get_support(a1: &MinkowskiDiff, a2: &Vector) -> SV {
 	};
 }
 
-pub fn project_origin_2(a1: &Vector, a2: &Vector, a3: &mut [f32;2])
+pub fn project_origin_2(a1: &Vector3, a2: &Vector3, a3: &mut [f32;2])
 	-> (f32, usize)
 {
 	let v1 = a2 - a1;
@@ -101,7 +101,7 @@ pub fn project_origin_2(a1: &Vector, a2: &Vector, a3: &mut [f32;2])
 }
 
 static U88: [usize; 3] = [2, 3, 1];
-pub fn project_origin_3(a1: &Vector, a2: &Vector, a3: &Vector,
+pub fn project_origin_3(a1: &Vector3, a2: &Vector3, a3: &Vector3,
 	a4: &mut [f32;3]) -> (f32, usize)
 {
 	let v4 = [a1, a2, a3];
