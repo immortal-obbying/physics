@@ -1,5 +1,5 @@
+use crate::util::transform::Transform;
 use crate::util::vector::Vector;
-use crate::util::xform::Xform;
 use crate::engine::bullet_math::{
 	fmaxss, fminss, cross, sse_normalize,
 };
@@ -153,10 +153,10 @@ pub fn support(shape: Shape, a2: Vector) -> Vector {
 }
 
 /// a1 type is a guess, cloning a2.p or a2 is probably not a good idea
-pub fn collision_transform(geom: GeomShape, a2: &Xform) -> Xform {
+pub fn collision_transform(geom: GeomShape, a2: &Transform) -> Transform {
 	match geom {
 		GeomShape::Ball => {
-			return Xform {
+			return Transform {
 				r: [1.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 1.0],
 				p: a2.p.clone()
 			};
@@ -173,7 +173,7 @@ pub fn collision_transform(geom: GeomShape, a2: &Xform) -> Xform {
 			};
 			let v1 = sse_normalize(&cross(&v4, &p));
 			let v5 = sse_normalize(&cross(&v1, &v4));
-			return Xform {
+			return Transform {
 				r: [
 					v4.x, v5.x, v1.x,
 					v4.y, v5.y, v1.y,
@@ -210,7 +210,7 @@ fn extents_size(geom: GeomShape, a2: &Vector) -> Vector {
 	}
 }
 
-pub fn simulation_extents(geom: GeomShape, a2: &Vector, a3: &Xform)
+pub fn simulation_extents(geom: GeomShape, a2: &Vector, a3: &Transform)
 	-> (Vector, Vector)
 {
 	let extents = extents_size(geom, a2);

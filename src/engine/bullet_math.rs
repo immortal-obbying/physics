@@ -1,5 +1,5 @@
+use crate::util::transform::Transform;
 use crate::util::vector::Vector;
-use crate::util::xform::Xform;
 
 pub type Matrix = [f32;9];
 pub type Quaternion = [f32;4];
@@ -110,7 +110,7 @@ pub fn mat_apply_t(a1: &Matrix, a2: &Vector) -> Vector {
 }
 
 #[inline]
-pub fn xform(a1: &Xform, a2: &Vector) -> Vector {
+pub fn xform(a1: &Transform, a2: &Vector) -> Vector {
 	let v1 = Vector { x: a1.r[0], y: a1.r[1], z: a1.r[2] };
 	let v2 = Vector { x: a1.r[3], y: a1.r[4], z: a1.r[5] };
 	let v3 = Vector { x: a1.r[6], y: a1.r[7], z: a1.r[8] };
@@ -118,7 +118,7 @@ pub fn xform(a1: &Xform, a2: &Vector) -> Vector {
 }
 
 #[inline]
-pub fn inv_xform(a1: &Xform, a2: &Vector) -> Vector {
+pub fn inv_xform(a1: &Transform, a2: &Vector) -> Vector {
 	let inv = a2 - a1.p;
 	let v1 = Vector { x: a1.r[0], y: a1.r[1], z: a1.r[2] };
 	let v2 = Vector { x: a1.r[3], y: a1.r[4], z: a1.r[5] };

@@ -1,7 +1,7 @@
 use crate::util::vector::Vector;
 
-#[derive(Clone)]
-pub struct Xform {
+#[derive(Copy, Clone)]
+pub struct Transform {
 	pub r: [f32;9],
 	pub p: Vector
 }
