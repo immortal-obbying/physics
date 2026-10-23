@@ -58,50 +58,51 @@ fn copysign(a1: f32, a2: f32) -> f32 {
 	}
 }
 
-pub fn support(shape: Shape, a2: Vector) -> Vector {
-	let half = shape.half;
-	let geom = shape.geom;
-
-	match geom {
+pub fn support(shape: &Shape, a2: Vector) -> Vector {
+	match shape.geom {
 		GeomShape::Ball => {
 			return Vector::new(0.0, 0.0, 0.0);
 		},
 
 		GeomShape::Block => {
 			return Vector::new(
-				copysign(a2.x, half.x),
-				copysign(a2.y, half.y),
-				copysign(a2.z, half.z)
+				copysign(a2.x, shape.half.x),
+				copysign(a2.y, shape.half.y),
+				copysign(a2.z, shape.half.z)
 			);
 		},
 
 		GeomShape::Wedge => {
-			let yy = a2.y * half.y;
-			let zz = a2.z * half.z;
+			let yy = a2.y * shape.half.y;
+			let zz = a2.z * shape.half.z;
 			if yy < 0.0 && zz > 0.0 {
 				return Vector::new(
-					copysign(a2.x, half.x),
-					copysign(a2.y, half.y),
-					copysign(a2.z, half.z)
+					copysign(a2.x, shape.half.x),
+					copysign(a2.y, shape.half.y),
+					copysign(a2.z, shape.half.z)
 				);
 			}
 			if yy > -zz {
 				return Vector::new(
-					copysign(a2.x, half.x), half.y, half.z
+					copysign(a2.x, shape.half.x),
+					shape.half.y,
+					shape.half.z
 				);
 			} else {
 				return Vector::new(
-					copysign(a2.x, half.x), -half.y, -half.z
+					copysign(a2.x, shape.half.x),
+					-shape.half.y,
+					-shape.half.z
 				);
 			}
 		},
 
 		GeomShape::Cylinder => {
-			let x = copysign(a2.x, half.x);
+			let x = copysign(a2.x, shape.half.x);
 			let yzlen = (a2.y * a2.y + a2.z * a2.z).sqrt();
 			if yzlen > 0.0 {
-				let y = a2.y / yzlen * half.y;
-				let z = a2.z / yzlen * half.y;
+				let y = a2.y / yzlen * shape.half.y;
+				let z = a2.z / yzlen * shape.half.y;
 				return Vector::new(x, y, z);
 			} else {
 				return Vector::new(x, 0.0, 0.0);
@@ -109,9 +110,9 @@ pub fn support(shape: Shape, a2: Vector) -> Vector {
 		},
 
 		GeomShape::CornerWedge => {
-			let xx = a2.x * half.x;
-			let yy = a2.y * half.y;
-			let zz = a2.z * half.z;
+			let xx = a2.x * shape.half.x;
+			let yy = a2.y * shape.half.y;
+			let zz = a2.z * shape.half.z;
 
 			let mut v11 = false;
 			if yy > 0.0 {
@@ -140,12 +141,16 @@ pub fn support(shape: Shape, a2: Vector) -> Vector {
 			}
 
 			if v11 {
-				return Vector::new(half.x, half.y, -half.z);
+				return Vector::new(
+					shape.half.x,
+					shape.half.y,
+					-shape.half.z
+				);
 			} else {
 				return Vector::new(
-					copysign(a2.x, half.x),
-					-half.y,
-					copysign(a2.z, half.z)
+					copysign(a2.x, shape.half.x),
+					-shape.half.y,
+					copysign(a2.z, shape.half.z)
 				);
 			}
 		}

@@ -1,8 +1,6 @@
 use crate::util::transform::Transform;
 use crate::util::vector::Vector;
-
-pub type Matrix = [f32;9];
-pub type Quaternion = [f32;4];
+use crate::engine::math::{ Matrix, Quaternion };
 
 #[inline]
 pub fn fsqrt(a1: f32) -> f32 {
